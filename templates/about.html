@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}About | Skin Disease Detection{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-10 col-lg-8">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h3 class="card-title mb-3">About This Project</h3>
+        <p>
+          This is a III/IV IT - B ML Lab project demonstrating how
+          <strong>Machine Learning (ML)</strong> and
+          <strong>Deep Learning (DL)</strong> can be used for
+          <em>automatic skin disease detection</em> from images.
+        </p>
+
+        <h5 class="mt-3">Machine Learning (Dataset A)</h5>
+        <p class="small">
+          Classical ML models (SVM, Random Forest, Logistic Regression) are
+          trained on a tabular feature dataset. In this project, the features
+          are handcrafted image descriptors such as color histograms extracted
+          from the skin images.
+        </p>
+
+        <h5 class="mt-3">Deep Learning (Dataset B)</h5>
+        <p class="small">
+          Deep learning models (a custom CNN and a ResNet18 transfer learning
+          model) are trained directly on raw skin images. Convolutional layers
+          learn complex patterns and textures related to different skin
+          conditions.
+        </p>
+
+        <h5 class="mt-3">Evaluation</h5>
+        <p class="small">
+          Both ML and DL models are evaluated using standard metrics:
+        </p>
+        <ul class="small">
+          <li><strong>Accuracy</strong>: percentage of correct predictions.</li>
+          <li>
+            <strong>Precision</strong>: among predicted positives, how many are
+            truly positive?
+          </li>
+          <li>
+            <strong>Recall</strong>: among true positives, how many did we
+            detect?
+          </li>
+          <li>
+            <strong>F1-score</strong>: harmonic mean of precision and recall.
+          </li>
+          <li>
+            <strong>Confusion Matrix</strong>: shows per-class performance and
+            common misclassifications.
+          </li>
+        </ul>
+
+        <h5 class="mt-3">Disclaimer</h5>
+        <p class="small text-muted">
+          This project is for educational and research purposes only. It is not
+          a certified medical device and must not be used to make or confirm any
+          diagnosis. Always consult a qualified dermatologist for medical
+          advice.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
