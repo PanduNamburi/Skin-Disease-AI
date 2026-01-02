@@ -1,0 +1,12 @@
+# Railpack configuration for Railway deployment
+# This helps Railway optimize the build
+
+[build]
+# Exclude Flutter app from build (not needed for Django backend)
+exclude = [
+  "skin_disease_app/**",
+  "training/**",
+  "train_skindisease.py",
+  "*.md"
+]
+

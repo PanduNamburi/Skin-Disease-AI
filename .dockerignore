@@ -1,0 +1,74 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+/media
+/staticfiles
+/static
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Flutter app (not needed for Django backend)
+skin_disease_app/
+
+# Dataset (not needed for deployment)
+SkinDisease/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment
+.env
+.env.local
+
+# Training scripts (not needed in production)
+training/
+train_skindisease.py
+
+# Templates (if not using web interface)
+# templates/
+
+# Large model files - will be downloaded at runtime or via LFS
+# Keep .pt files but they should be in Git LFS
+*.pkl
+*.h5
+*.pth
+
+# Build artifacts
+*.apk
+*.aab
+build.sh
+
+# Documentation
+*.md
+README*
+
