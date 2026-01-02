@@ -31,8 +31,8 @@ db.sqlite3-journal
 .DS_Store
 Thumbs.db
 
-# Large model files (excluded - too large for GitHub)
-*.pt
+# Large model files - Using Git LFS (see .gitattributes)
+# *.pt files are tracked by Git LFS
 *.pkl
 *.h5
 *.pth
