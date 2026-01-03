@@ -14,6 +14,13 @@ mkdir -p models
 mkdir -p static
 mkdir -p media/uploaded_images
 
+# Download models from cloud storage if they don't exist (optional)
+# Set ENABLE_MODEL_DOWNLOAD=true to enable this feature
+if [ "$ENABLE_MODEL_DOWNLOAD" = "true" ]; then
+    echo "📥 Downloading models from cloud storage..."
+    python download_models.py || echo "⚠️  Model download failed, continuing..."
+fi
+
 # Collect static files
 echo "📦 Collecting static files..."
 python manage.py collectstatic --noinput || echo "⚠️  Static files collection failed, continuing..."
