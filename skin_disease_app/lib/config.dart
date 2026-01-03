@@ -5,9 +5,10 @@ class ApiConfig {
   static const String localBaseUrl = 'http://192.168.1.26:8000';
   
   // For cloud deployment (works on mobile data)
-  // Replace with your Railway/Render URL after deployment
-  // Example: 'https://your-app-name.up.railway.app'
-  static const String cloudBaseUrl = 'https://YOUR-APP-NAME.up.railway.app';
+  // Replace with your Render/Railway URL after deployment
+  // Render example: 'https://skinsense-ai.onrender.com'
+  // Railway example: 'https://your-app-name.up.railway.app'
+  static const String cloudBaseUrl = 'https://YOUR-APP-NAME.onrender.com';
   
   // Set to true to use cloud URL, false for local
   static const bool useCloud = false;

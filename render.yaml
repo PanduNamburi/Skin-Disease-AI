@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: skinsense-ai
+    env: python
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: bash start.sh
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+      - key: PORT
+        fromService:
+          type: web
+          name: skinsense-ai
+          property: port
+    plan: starter  # Free tier, upgrade to standard for better performance
+
