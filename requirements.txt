@@ -5,7 +5,7 @@ django-cors-headers>=4.9.0
 gunicorn>=21.2.0
 whitenoise>=6.5.0
 
-# PyTorch (CPU-only will be installed automatically on Railway)
+# PyTorch (CPU-only will be installed automatically on cloud platforms)
 torch>=2.0.0,<3.0.0
 torchvision>=0.15.0,<1.0.0
 
