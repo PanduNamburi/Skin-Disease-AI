@@ -6,11 +6,15 @@ services:
     startCommand: bash start.sh
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11
+        value: 3.11.0
       - key: PORT
         fromService:
           type: web
           name: skinsense-ai
           property: port
+      # Add these in Render Dashboard → Environment Variables:
+      # SECRET_KEY: [Generate using: python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"]
+      # DEBUG: False
+      # ALLOWED_HOSTS: your-app-name.onrender.com
     plan: starter  # Free tier, upgrade to standard for better performance
 
