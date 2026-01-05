@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Home | Skin Disease Detection{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-4">
+  <div class="col-md-6 mb-4 mb-md-0">
+    <h1 class="display-4 fw-bold text-primary mb-4" style="line-height: 1.2;">
+      Skin Disease Detection & Cure
+    </h1>
+    <p class="lead mb-3" style="color: var(--gray-700);">
+      Advanced machine learning and deep learning models for accurate skin disease classification from medical images.
+    </p>
+    <p class="mb-4" style="color: var(--gray-600);">
+      Upload a dermatoscopic or clinical skin image, choose from multiple AI models, and receive instant predictions with confidence scores and severity assessments.
+    </p>
+    <a href="{% url 'skindetection:upload' %}" class="btn btn-primary btn-lg px-4 py-3">
+      <strong>Get Started &raquo;</strong>
+    </a>
+  </div>
+  <div class="col-md-6">
+    <div class="hero-card">
+      <h5 class="fw-bold mb-4 text-primary">How It Works</h5>
+      <ol class="text-start" style="line-height: 2;">
+        <li class="mb-2"><strong>Upload</strong> a clear skin lesion image (JPEG/PNG)</li>
+        <li class="mb-2"><strong>Select</strong> a model: classical ML or deep learning</li>
+        <li class="mb-2"><strong>Analyze</strong> - the image is preprocessed and analyzed</li>
+        <li class="mb-3">
+          <strong>Receive</strong> detailed results:
+          <ul class="mt-2" style="list-style-type: disc; padding-left: 1.5rem;">
+            <li>Disease name with confidence</li>
+            <li>Top 3 predictions</li>
+            <li>Estimated severity level</li>
+            <li>Complete probability breakdown</li>
+          </ul>
+        </li>
+      </ol>
+      <div class="alert alert-warning mt-4 mb-0">
+        <strong>⚠️ Medical Disclaimer:</strong> This is an educational project and is not a substitute for professional medical diagnosis. Always consult a qualified dermatologist.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-5">
+  <div class="col-md-4 mb-4">
+    <div class="card h-100">
+      <div class="card-body text-center">
+        <div class="mb-3" style="font-size: 3rem;">🤖</div>
+        <h5 class="fw-bold mb-3">Multiple AI Models</h5>
+        <p class="text-muted small">
+          Choose from ResNet18, Custom CNN, Random Forest, SVM, or Logistic Regression models.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 mb-4">
+    <div class="card h-100">
+      <div class="card-body text-center">
+        <div class="mb-3" style="font-size: 3rem;">📊</div>
+        <h5 class="fw-bold mb-3">Detailed Analysis</h5>
+        <p class="text-muted small">
+          Get top predictions, confidence scores, and comprehensive probability breakdowns.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 mb-4">
+    <div class="card h-100">
+      <div class="card-body text-center">
+        <div class="mb-3" style="font-size: 3rem;">⚡</div>
+        <h5 class="fw-bold mb-3">Fast & Accurate</h5>
+        <p class="text-muted small">
+          Powered by advanced deep learning with test-time augmentation for enhanced accuracy.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
