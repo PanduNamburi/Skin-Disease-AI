@@ -23,25 +23,19 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-change-this-for-produ
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 # Allowed hosts - use environment variable in production
-# For Render.com, automatically detect Render environment
+# For Render.com, include the service domain explicitly
 allowed_hosts_env = os.environ.get('ALLOWED_HOSTS', '')
 if allowed_hosts_env:
     ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_env.split(',') if host.strip()]
-elif os.environ.get('RENDER'):
-    # Running on Render.com - allow Render domains
-    render_service_name = os.environ.get('RENDER_SERVICE_NAME', '')
-    render_service_id = os.environ.get('RENDER_SERVICE_ID', '')
-    if render_service_name:
-        ALLOWED_HOSTS = [
-            f'{render_service_name}.onrender.com',
-            '.onrender.com',  # Allow all Render subdomains
-        ]
-    else:
-        # Fallback: allow common Render patterns
-        ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
 else:
-    # Development: allow all hosts
-    ALLOWED_HOSTS = ['*']
+    # Default: include Render domain and allow localhost for development
+    # Note: '*' only works when DEBUG=True, so we need explicit domains for production
+    ALLOWED_HOSTS = [
+        'skinsense-ai-nf4p.onrender.com',
+        '.onrender.com',  # Allow all Render subdomains (wildcard subdomain)
+        'localhost',
+        '127.0.0.1',
+    ]
 
 
 # Application definition
