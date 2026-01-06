@@ -314,12 +314,31 @@ def load_ml_model(model_name: str):
 DL_TRANSFORM = build_dl_transform()
 
 
+#
+# Cached DL models (loaded once per process to avoid repeated heavy loads on Render)
+#
+DL_MODELS: Dict[str, nn.Module] = {}
+
+
+def get_cached_dl_model(model_type: str) -> nn.Module:
+    """
+    Return a cached deep learning model instance.
+    Loads the model only once per process to avoid repeated heavy disk and CPU/GPU work.
+    """
+    if model_type not in DL_MODELS:
+        print(f"[DL] Loading model '{model_type}' for the first time...")
+        DL_MODELS[model_type] = load_dl_model(model_type)
+        print(f"[DL] Model '{model_type}' loaded and cached.")
+    return DL_MODELS[model_type]
+
+
 def predict_with_dl(image: Image.Image, model_type: str, use_tta: bool = True) -> Dict[str, Any]:
     """
     Run prediction using a deep learning model with Test-Time Augmentation (TTA) for better accuracy.
     TTA averages predictions from multiple augmented versions of the image.
     """
-    model = load_dl_model(model_type)
+    # IMPORTANT: load the model once and reuse it across requests
+    model = get_cached_dl_model(model_type)
     
     # Test-Time Augmentation: create multiple augmented versions
     if use_tta:
