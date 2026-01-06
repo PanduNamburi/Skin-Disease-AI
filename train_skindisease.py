@@ -1,6 +1,10 @@
 import os
 import csv
+import ssl
 from pathlib import Path
+
+# Fix SSL certificate issue for downloading pretrained weights
+ssl._create_default_https_context = ssl._create_unverified_context
 
 import torch
 import torch.nn as nn
@@ -322,7 +326,7 @@ def main():
     print(f"Using device: {device}")
 
     batch_size = 32  # Optimal batch size for ResNet50
-    num_epochs = 50  # Increased from 30 for better convergence
+    num_epochs = 20  # Reduced to 20 epochs for faster training
     learning_rate = 2e-4  # Slightly higher initial LR
     early_stopping_patience = 10  # Stop if no improvement for 10 epochs
 

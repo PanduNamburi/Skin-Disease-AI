@@ -8,13 +8,11 @@ class ApiConfig {
   static const String localBaseUrl = 'http://localhost:8000';
   
   // For cloud deployment (works on mobile data)
-  // Replace with your Render/Railway URL after deployment
-  // Render example: 'https://skinsense-ai.onrender.com'
-  // Railway example: 'https://your-app-name.up.railway.app'
-  static const String cloudBaseUrl = 'https://YOUR-APP-NAME.onrender.com';
+  // Deployed Render backend URL
+  static const String cloudBaseUrl = 'https://skinsense-ai-nf4p.onrender.com';
   
   // Set to true to use cloud URL, false for local
-  static const bool useCloud = false;
+  static const bool useCloud = true; // Using deployed Render backend
   
   // Base URL getter
   static String get baseUrl => useCloud ? cloudBaseUrl : localBaseUrl;

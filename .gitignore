@@ -33,12 +33,14 @@ Thumbs.db
 
 # Large model files - Using Git LFS (see .gitattributes)
 # *.pt files are tracked by Git LFS
+*.pt
 *.pkl
 *.h5
 *.pth
+best_skindisease_model.pt
 
 # Dataset (if large)
-# SkinDisease/
+SkinDisease/
 
 # Jupyter
 .ipynb_checkpoints/

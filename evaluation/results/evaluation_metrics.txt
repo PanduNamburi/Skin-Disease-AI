@@ -1,0 +1,84 @@
+================================================================================
+SKIN DISEASE MODEL EVALUATION METRICS
+================================================================================
+
+OVERALL METRICS
+--------------------------------------------------------------------------------
+Accuracy: 52.45%
+
+AVERAGE METRICS
+--------------------------------------------------------------------------------
+Weighted Average (accounts for class imbalance):
+  Precision: 55.23%
+  Recall: 52.45%
+  F1 Score: 52.52%
+
+Macro Average (simple average across classes):
+  Precision: 49.09%
+  Recall: 51.61%
+  F1 Score: 48.62%
+
+Micro Average:
+  Precision: 52.45%
+  Recall: 52.45%
+  F1 Score: 52.45%
+
+PER-CLASS METRICS
+--------------------------------------------------------------------------------
+Class                     Precision    Recall       F1-Score     Support   
+--------------------------------------------------------------------------------
+Acne                           53.33%      80.00%      64.00%         50
+Actinic_Keratosis              63.64%      42.17%      50.72%         83
+Benign_tumors                  40.32%      20.66%      27.32%        121
+Bullous                        65.91%      52.73%      58.59%         55
+Candidiasis                    28.79%      70.37%      40.86%         27
+DrugEruption                   46.75%      59.02%      52.17%         61
+Eczema                         50.43%      52.68%      51.53%        112
+Infestations_Bites             28.57%      33.33%      30.77%         60
+Lichen                         56.41%      36.07%      44.00%         61
+Lupus                          20.00%      23.53%      21.62%         34
+Moles                          40.38%      52.50%      45.65%         40
+Psoriasis                      61.40%      39.77%      48.28%         88
+Rosacea                        34.38%      78.57%      47.83%         28
+Seborrh_Keratoses              65.12%      54.90%      59.57%         51
+SkinCancer                     43.02%      48.05%      45.40%         77
+Sun_Sunlight_Damage            29.41%      44.12%      35.29%         34
+Tinea                          48.53%      32.35%      38.82%        102
+Unknown_Normal                 97.69%      89.42%      93.37%        189
+Vascular_Tumors                29.07%      41.67%      34.25%         60
+Vasculitis                     44.44%      53.85%      48.70%         52
+Vitiligo                       80.00%      78.05%      79.01%         82
+Warts                          52.38%      51.56%      51.97%         64
+
+DETAILED CLASSIFICATION REPORT
+--------------------------------------------------------------------------------
+                     precision    recall  f1-score   support
+
+               Acne       0.53      0.80      0.64        50
+  Actinic_Keratosis       0.64      0.42      0.51        83
+      Benign_tumors       0.40      0.21      0.27       121
+            Bullous       0.66      0.53      0.59        55
+        Candidiasis       0.29      0.70      0.41        27
+       DrugEruption       0.47      0.59      0.52        61
+             Eczema       0.50      0.53      0.52       112
+ Infestations_Bites       0.29      0.33      0.31        60
+             Lichen       0.56      0.36      0.44        61
+              Lupus       0.20      0.24      0.22        34
+              Moles       0.40      0.53      0.46        40
+          Psoriasis       0.61      0.40      0.48        88
+            Rosacea       0.34      0.79      0.48        28
+  Seborrh_Keratoses       0.65      0.55      0.60        51
+         SkinCancer       0.43      0.48      0.45        77
+Sun_Sunlight_Damage       0.29      0.44      0.35        34
+              Tinea       0.49      0.32      0.39       102
+     Unknown_Normal       0.98      0.89      0.93       189
+    Vascular_Tumors       0.29      0.42      0.34        60
+         Vasculitis       0.44      0.54      0.49        52
+           Vitiligo       0.80      0.78      0.79        82
+              Warts       0.52      0.52      0.52        64
+
+           accuracy                           0.52      1531
+          macro avg       0.49      0.52      0.49      1531
+       weighted avg       0.55      0.52      0.53      1531
+
+================================================================================

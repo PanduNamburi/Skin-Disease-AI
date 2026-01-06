@@ -1,4 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Internet access for API calls to the Render backend -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Optional: check network state (not strictly required for requests) -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:label="skin_disease_app"
         android:name="${applicationName}"
