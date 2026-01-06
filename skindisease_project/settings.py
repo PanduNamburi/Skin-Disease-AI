@@ -20,10 +20,28 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-change-this-for-produ
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Set DEBUG=False in production via environment variable
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 # Allowed hosts - use environment variable in production
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
+# For Render.com, automatically detect Render environment
+allowed_hosts_env = os.environ.get('ALLOWED_HOSTS', '')
+if allowed_hosts_env:
+    ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_env.split(',') if host.strip()]
+elif os.environ.get('RENDER'):
+    # Running on Render.com - allow Render domains
+    render_service_name = os.environ.get('RENDER_SERVICE_NAME', '')
+    render_service_id = os.environ.get('RENDER_SERVICE_ID', '')
+    if render_service_name:
+        ALLOWED_HOSTS = [
+            f'{render_service_name}.onrender.com',
+            '.onrender.com',  # Allow all Render subdomains
+        ]
+    else:
+        # Fallback: allow common Render patterns
+        ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
+else:
+    # Development: allow all hosts
+    ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -147,3 +165,9 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
 # CORS settings for Android app
 CORS_ALLOW_ALL_ORIGINS = True  # Allow all origins (restrict in production)
 
+# CSRF settings for production
+if not DEBUG:
+    CSRF_TRUSTED_ORIGINS = [
+        'https://skinsense-ai-nf4p.onrender.com',
+        'https://*.onrender.com',
+    ]
