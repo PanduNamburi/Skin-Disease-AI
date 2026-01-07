@@ -24,5 +24,13 @@ python manage.py migrate --noinput || echo "⚠️  Migrations failed, continuin
 
 # Start the server
 echo "✅ Starting Gunicorn server..."
-exec gunicorn skindisease_project.wsgi --log-file - --bind 0.0.0.0:$PORT
+# Increase timeout to handle PyTorch model loading (default is 30s, increase to 120s)
+# Use 2 workers for better performance on Render
+exec gunicorn skindisease_project.wsgi \
+    --log-file - \
+    --bind 0.0.0.0:$PORT \
+    --timeout 120 \
+    --workers 1 \
+    --worker-class sync \
+    --preload
 
