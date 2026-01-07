@@ -164,4 +164,5 @@ if not DEBUG:
     CSRF_TRUSTED_ORIGINS = [
         'https://skinsense-ai-nf4p.onrender.com',
         'https://*.onrender.com',
+        '*',
     ]

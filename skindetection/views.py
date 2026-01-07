@@ -19,9 +19,31 @@ import joblib
 import numpy as np
 from PIL import Image
 
-import torch
-import torch.nn as nn
-from torchvision import transforms, models
+# Lazy import PyTorch to reduce startup memory usage on Render free tier
+# PyTorch is only imported when actually needed for predictions
+_torch = None
+_torch_nn = None
+_torchvision_transforms = None
+_torchvision_models = None
+
+def _lazy_import_torch():
+    """Lazy import PyTorch modules only when needed. This reduces startup memory usage."""
+    global _torch, _torch_nn, _torchvision_transforms, _torchvision_models
+    if _torch is None:
+        try:
+            import torch
+            import torch.nn as nn
+            from torchvision import transforms, models
+            _torch = torch
+            _torch_nn = nn
+            _torchvision_transforms = transforms
+            _torchvision_models = models
+        except ImportError as e:
+            raise ImportError(
+                f"PyTorch is not installed or cannot be imported: {e}. "
+                "Please install PyTorch: pip install torch torchvision"
+            )
+    return _torch, _torch_nn, _torchvision_transforms, _torchvision_models
 
 from training.utils import get_project_root, allowed_image_file, compute_severity_level
 from .disease_info import get_disease_info
@@ -124,6 +146,8 @@ def get_sample_images_from_dataset(disease_name: str, max_images: int = 3) -> li
 
 
 def build_dl_transform(input_size: int = 224):
+    """Build data transformation pipeline. Lazy loads torchvision."""
+    _, _, transforms, _ = _lazy_import_torch()
     return transforms.Compose(
         [
             transforms.Resize((input_size, input_size)),
@@ -136,7 +160,9 @@ def build_dl_transform(input_size: int = 224):
     )
 
 
-def get_device() -> torch.device:
+def get_device():
+    """Get the best available device. Lazy loads torch."""
+    torch, _, _, _ = _lazy_import_torch()
     if torch.cuda.is_available():
         return torch.device("cuda")
     if getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
@@ -144,39 +170,68 @@ def get_device() -> torch.device:
     return torch.device("cpu")
 
 
-DEVICE = get_device()
+# Lazy-loaded device (computed when first needed, not at module import)
+_DEVICE = None
+
+def get_device_cached():
+    """Get device, cached after first call."""
+    global _DEVICE
+    if _DEVICE is None:
+        _DEVICE = get_device()
+    return _DEVICE
 
 
-class SimpleCNN(nn.Module):
+class SimpleCNN:
+    """Simple CNN model. Lazy loads torch.nn when instantiated."""
     """Same architecture as in training/dl_train.py, for inference."""
 
     def __init__(self, num_classes: int):
-        super().__init__()
-        self.features = nn.Sequential(
-            nn.Conv2d(3, 32, kernel_size=3, padding=1),
-            nn.BatchNorm2d(32),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2),
-            nn.Conv2d(32, 64, kernel_size=3, padding=1),
-            nn.BatchNorm2d(64),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2),
-            nn.Conv2d(64, 128, kernel_size=3, padding=1),
-            nn.BatchNorm2d(128),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2),
-        )
-        self.classifier = nn.Sequential(
-            nn.AdaptiveAvgPool2d((1, 1)),
-            nn.Flatten(),
-            nn.Dropout(0.5),
-            nn.Linear(128, num_classes),
-        )
-
-    def forward(self, x):
-        x = self.features(x)
-        x = self.classifier(x)
-        return x
+        _, nn, _, _ = _lazy_import_torch()
+        # Dynamically create a class that inherits from nn.Module
+        class SimpleCNNModule(nn.Module):
+            def __init__(self, num_classes):
+                super().__init__()
+                self.features = nn.Sequential(
+                    nn.Conv2d(3, 32, kernel_size=3, padding=1),
+                    nn.BatchNorm2d(32),
+                    nn.ReLU(inplace=True),
+                    nn.MaxPool2d(2),
+                    nn.Conv2d(32, 64, kernel_size=3, padding=1),
+                    nn.BatchNorm2d(64),
+                    nn.ReLU(inplace=True),
+                    nn.MaxPool2d(2),
+                    nn.Conv2d(64, 128, kernel_size=3, padding=1),
+                    nn.BatchNorm2d(128),
+                    nn.ReLU(inplace=True),
+                    nn.MaxPool2d(2),
+                )
+                self.classifier = nn.Sequential(
+                    nn.AdaptiveAvgPool2d((1, 1)),
+                    nn.Flatten(),
+                    nn.Dropout(0.5),
+                    nn.Linear(128, num_classes),
+                )
+            
+            def forward(self, x):
+                x = self.features(x)
+                x = self.classifier(x)
+                return x
+        
+        self._module = SimpleCNNModule(num_classes)
+    
+    def __call__(self, x):
+        return self._module(x)
+    
+    def eval(self):
+        self._module.eval()
+        return self
+    
+    def to(self, device):
+        self._module.to(device)
+        return self
+    
+    def load_state_dict(self, state_dict):
+        return self._module.load_state_dict(state_dict)
 
 
 def load_dl_model(model_type: str):
@@ -205,6 +260,7 @@ def load_dl_model(model_type: str):
             if not weight_path.exists():
                 continue
             try:
+                torch, nn, _, models = _lazy_import_torch()
                 model = models.resnet101(weights=None)
                 in_features = model.fc.in_features
                 model.fc = nn.Sequential(
@@ -219,8 +275,10 @@ def load_dl_model(model_type: str):
                     nn.Dropout(0.3),
                     nn.Linear(512, num_classes),
                 )
-                model.load_state_dict(torch.load(weight_path, map_location=DEVICE))
-                model.to(DEVICE)
+                torch, _, _, _ = _lazy_import_torch()
+                device = get_device_cached()
+                model.load_state_dict(torch.load(weight_path, map_location=device))
+                model.to(device)
                 model.eval()
                 # Loaded ResNet101 weights successfully
                 print(f"Loaded ResNet101 weights from {weight_path}")
@@ -242,8 +300,10 @@ def load_dl_model(model_type: str):
                         nn.Dropout(0.3),
                         nn.Linear(512, num_classes),
                     )
-                    model.load_state_dict(torch.load(weight_path, map_location=DEVICE))
-                    model.to(DEVICE)
+                    torch, _, _, _ = _lazy_import_torch()
+                    device = get_device_cached()
+                    model.load_state_dict(torch.load(weight_path, map_location=device))
+                    model.to(device)
                     model.eval()
                     # Loaded ResNet50 weights successfully
                     print(f"Loaded ResNet50 weights from {weight_path}")
@@ -259,14 +319,17 @@ def load_dl_model(model_type: str):
             if not weight_path.exists():
                 continue
             try:
+                torch, nn, _, models = _lazy_import_torch()
                 model = models.resnet18(weights=None)
                 in_features = model.fc.in_features
                 model.fc = nn.Sequential(
                     nn.Dropout(0.5),
                     nn.Linear(in_features, num_classes),
                 )
-                model.load_state_dict(torch.load(weight_path, map_location=DEVICE))
-                model.to(DEVICE)
+                torch, _, _, _ = _lazy_import_torch()
+                device = get_device_cached()
+                model.load_state_dict(torch.load(weight_path, map_location=device))
+                model.to(device)
                 model.eval()
                 # Loaded ResNet18 weights successfully
                 print(f"Loaded ResNet18 weights from {weight_path}")
@@ -290,9 +353,11 @@ def load_dl_model(model_type: str):
                 f"Model weights not found at {weight_path}. "
                 "Please run training/dl_train.py or train_skindisease.py first."
             )
+        torch, _, _, _ = _lazy_import_torch()
+        device = get_device_cached()
         model = SimpleCNN(num_classes=num_classes)
-        model.load_state_dict(torch.load(weight_path, map_location=DEVICE))
-        model.to(DEVICE)
+        model.load_state_dict(torch.load(weight_path, map_location=device))
+        model.to(device)
         model.eval()
         return model
 
@@ -311,7 +376,15 @@ def load_ml_model(model_name: str):
     return joblib.load(path)
 
 
-DL_TRANSFORM = build_dl_transform()
+# Lazy-loaded transform (computed when first needed, not at module import)
+_DL_TRANSFORM = None
+
+def get_dl_transform():
+    """Get DL transform, cached after first call."""
+    global _DL_TRANSFORM
+    if _DL_TRANSFORM is None:
+        _DL_TRANSFORM = build_dl_transform()
+    return _DL_TRANSFORM
 
 
 #
@@ -382,7 +455,9 @@ def predict_with_dl(image: Image.Image, model_type: str, use_tta: bool = True) -
         all_probs = []
         with torch.no_grad():
             for aug_transform in augmentations:
-                img_tensor = aug_transform(image).unsqueeze(0).to(DEVICE)
+                torch, _, _, _ = _lazy_import_torch()
+                device = get_device_cached()
+                img_tensor = aug_transform(image).unsqueeze(0).to(device)
                 logits = model(img_tensor)
                 probs = torch.softmax(logits, dim=1)[0].cpu().numpy()
                 all_probs.append(probs)
@@ -390,7 +465,10 @@ def predict_with_dl(image: Image.Image, model_type: str, use_tta: bool = True) -
         # Average probabilities from all augmentations
         probs = np.mean(all_probs, axis=0)
     else:
-        img_tensor = DL_TRANSFORM(image).unsqueeze(0).to(DEVICE)
+        torch, _, _, _ = _lazy_import_torch()
+        device = get_device_cached()
+        transform = get_dl_transform()
+        img_tensor = transform(image).unsqueeze(0).to(device)
         with torch.no_grad():
             logits = model(img_tensor)
             probs = torch.softmax(logits, dim=1)[0].cpu().numpy()
