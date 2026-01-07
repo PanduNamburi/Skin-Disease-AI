@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+# Don't use set -e to allow graceful error handling
 
 echo "🚀 Starting SkinSense AI application..."
 
@@ -24,13 +24,16 @@ python manage.py migrate --noinput || echo "⚠️  Migrations failed, continuin
 
 # Start the server
 echo "✅ Starting Gunicorn server..."
-# Increase timeout to handle PyTorch model loading (default is 30s, increase to 120s)
-# Use 2 workers for better performance on Render
+# Increased timeout to handle PyTorch imports (PyTorch is heavy)
+# Using 1 worker to minimize memory usage on free tier
+# Removed --preload as it can cause issues with heavy imports
 exec gunicorn skindisease_project.wsgi \
     --log-file - \
     --bind 0.0.0.0:$PORT \
-    --timeout 120 \
+    --timeout 180 \
     --workers 1 \
     --worker-class sync \
-    --preload
+    --max-requests 1000 \
+    --max-requests-jitter 100 \
+    --graceful-timeout 30
 
